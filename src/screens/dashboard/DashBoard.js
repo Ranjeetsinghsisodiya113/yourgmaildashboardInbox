@@ -405,7 +405,7 @@
 
 
 import React, { useRef, useState, useEffect, useContext, useMemo, useCallback } from 'react';
-import { Animated, View, StyleSheet, PanResponder, Text, ImageBackground, Alert, ToastAndroid } from 'react-native';
+import { Animated, View, StyleSheet, PanResponder, Text, ImageBackground, Alert, ToastAndroid, BackHandler } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { localStorage } from '../../components/localstorageProvider';
 import axios from 'axios';
@@ -423,13 +423,37 @@ const Dashboard = ({ navigation }) => {
     const [emails, setEmails] = useState([]);
     const { showLoader, hideLoader } = useContext(LoaderContext);
 
+
+    useEffect(() => {
+        // Function to handle the back button press
+        const handleBackPress = () => {
+            Alert.alert(
+                "Exit App",
+                "Are you sure you want to exit?",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "OK", onPress: () => BackHandler.exitApp() },
+                ],
+                { cancelable: false }
+            );
+            return true; // Returning `true` prevents the default back button behavior
+        };
+
+        // Add back handler listener
+        BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+        // Cleanup the listener on unmount
+        return () => {
+            BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+        };
+    }, []);
     // Fetch user and token on mount
     useEffect(() => {
         const initialize = async () => {
             try {
                 const savedUser = await localStorage.getItemObject('user');
                 const savedToken = await localStorage.getItemString('accessToken');
-console.log(savedUser)
+
                 if (savedUser) setUser(savedUser);
                 if (savedToken) {
                     setAccessToken(savedToken);

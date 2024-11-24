@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ImageBackground, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ImageBackground, TouchableOpacity, ToastAndroid, BackHandler } from 'react-native';
 
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 
@@ -22,6 +22,31 @@ function SignIn({ navigation }) {
       scopes: ['https://www.googleapis.com/auth/gmail.modify',],
     });
   }, [])
+
+
+  useEffect(() => {
+    // Function to handle the back button press
+    const handleBackPress = () => {
+        Alert.alert(
+            "Exit App",
+            "Are you sure you want to exit?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "OK", onPress: () => BackHandler.exitApp() },
+            ],
+            { cancelable: false }
+        );
+        return true; // Returning `true` prevents the default back button behavior
+    };
+
+    // Add back handler listener
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    // Cleanup the listener on unmount
+    return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+}, []);
 
   async function onGoogleButtonPress() {
     try {
