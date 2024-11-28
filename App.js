@@ -5,11 +5,11 @@ import RouteNavigation from './src/navigator/RouteNavigation';
 import { LoaderProvider } from "./src/components/LoaderContext";
 const App = () => {
   return (
-    <LoaderProvider>
+  <LoaderProvider>
    <NavigationContainer>
     <RouteNavigation />
    </NavigationContainer>
-   </LoaderProvider>
+  </LoaderProvider>
   )
 }
 
